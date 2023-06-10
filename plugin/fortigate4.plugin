@@ -1,0 +1,12 @@
+plugin_id: 4
+filename: fortigate.plugin
+listen_ip: 192.168.0.33
+core_id: [6]
+
+regex_id: 24
+description: 0010d - fortigate date-time
+precheck:  time=
+regexp: date=(?P<date>\d+-\d+-\d+\stime=\d+:\d+:\d+)(?:\s+devname="?(?P<devname>[^"\s]+)"?|\s+(?:devid|device_id)="?(?P<devid>[^\s"]+)"?|\s+log_?id="?\d{4}(?P<msgid>[^\s"]+)"?|\s+type="?(?P<type>[^\s"]+)"?|\s+subtype="?(?P<subtype>[^\s"]+)"?|\s+eventtype=(?P<eventtype>\S+)|\s+level="?(?P<level>[^\s"]+)"?|\s+(?:status|apprisk)="?(?P<status_or_apprisk>[^\s"]+)"?|\s+vd="?(?P<vd>[^",\s]+)"?|\s+ap="(?P<ap>[^"]*)"|\s+vap="(?P<vap>[^"]*)"|\s+(?:ip="?|src_ip=|srcip="?|src=|rem_?ip=|ui="?(?:ssh\(|https\()?)(?P<srcip>[^)\s"]+)\)?"?|\s+(?:src_?port|rem_?port)=(?P<srcport>\S+)|\s+(?:out_?intf|srcintf)="(?P<srcintf>[^"]+)"|\s+(?:dst_ip|dstip|dst|loc_?ip|server)="?(?P<dstip>(?:(?!N/A)[^\s"]+))"?|\s+(?:dst_?port|loc_?port)=(?P<dstport>\S+)|\s+dstintf="(?P<dstintf>[^"\s]+)"?|\s+proto=(?P<proto>\S+)|\s+action="?(?P<action>[^"\s]+)"?|\s+service="?(?P<service>[^",\s]+)"?|\s+hostname="?(?P<hostname>[^"\s]+)"?|\s+url="?(?P<url>[^"\s]+)"?|\s+user="?(?P<user>[^"\s]+)"?|\s+result=(?P<result>\S+)|\s+channel=(?P<ch>\d+)|\s+radioband="(?P<band>[^"]*)"|\s+security="(?P<sec>[^"]*)"|\s+encryption="(?P<enc>[^"]*)"|\s+reason="(?P<reason>[^"]*)"|\s+msg="(?P<msg>[^"]+)"|\s+pri=(?P<pri>\S+)|\s+srcmac="?(?P<srcmac>[^"\s]+)"?|\s(?:vpn_?tunnel|appcat)="(?P<vpn_tunnel_or_appcat>[^"]+)"|\stunnel_ip=(?P<tunnel_ip>\S+)|\sgroup="?(?P<group>[^"\s]+)"?|\s*dstname="(?P<dst_name>[^"]+)"|\sdst_host="(?P<dst_host>[^"]+)"|\sseverity=(?P<severity>\S+)|\sattack="(?P<attack>[^"]+)"|\sattackid=(?P<attack_id>\S+)|\scrscore=(?P<client_risk_score>\S+)|\s*file="(?P<filename>[^"]+)"|\s+[^=]+=(?:\S+(?:(?!\s\w+=)\s\S+)*))+
+fields: [event_type:"event"][date:date:normalize_date_fortigate][device:devname][plugin_sid:msgid][src_ip:srcip][src_port:srcport][dst_ip:dstip][dst_port:dstport][protocol:proto:normalize_protocol][username:user][filename:filename][userdata1:hostname][userdata2:srcmac][userdata3:action][userdata4:severity][userdata5:level][userdata6:vd][userdata7:attack][userdata8:attack_id][userdata9:client_risk_score]
+
+end:end

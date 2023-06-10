@@ -1,0 +1,16 @@
+plugin_id: 2
+filename: plugin.plugin
+listen_ip: 192.168.1.109
+listen_port: 514
+core_id: [4]
+all_nondedicated_cores: true
+
+regex_id: 0
+description: 0002-b - fortigate - traffic forward - new format
+precheck: subtype="forward"
+regexp: date=(?P<date>\d+-\d+-\d+\stime=\d+:\d+:\d+)\s+devname="(?P<devname>[^"]+)"\s+devid="(?P<devid>[^"]+)"\s+log_?id="\d{4}(?P<msgid>\d+)"\s+type="(?P<type>traffic)"\s+subtype="(?P<subtype>forward)"\s+(?:eventtype=(?P<eventtype>\S+)\s+|level="(?P<level>[^"]+)"\s+|vd="(?P<vd>[^"]+)"\s+|(?:ip="?|src_ip=|srcip=|src=|remip=|ui=(?:ssh\()?)(?P<srcip>[^)\s"]+)\)?"?\s+|srcname="(?P<srcname>[^"]+)"\s+|(?:src_?port|remport)=(?P<srcport>\S+)\s+|(?:outintf|srcintf)="(?P<srcintf>[^"]+)"\s+|(?:dst_ip|dstip|dst|locip)=(?P<dstip>\S+)\s+|(?:dst_?port|locport)=(?P<dstport>\S+)\s+|dstintf="(?P<dstintf>[^"]+)"\s+|proto=(?P<proto>\S+)\s+|action="(?P<action>[^"]+)"\s+|service="(?P<service>[^"]+)"\s+|(?:dst)?osname="(?P<osname>[^"]+)"\s+|app="?(?P<app>[^"\s]+)"?\s+|devtype="?(?P<devtype>[^"]+)"?\s+|(?:unauth)?user="(?P<user>[^"]+)"\s+|msg="(?P<msg>[^"]+)"\s+|pri=(?P<pri>\S+)\s+|srcmac="(?P<srcmac>[^"]+)"\s+|dstmac="(?P<dst_mac>[^"]+)"\s+|dstname="(?P<dst_name>[^"]+)"\s+|dst_host="(?P<dst_host>[^"]+)"\s+|[^=]+=(?:"[^"]+"|\S+)\s*)+
+fields: [plugin_sid:msgid][device:devname][date:date][src_ip:srcip][src_port:srcport][dst_ip:dstip][dst_port:dstport][protocol:proto][username:user][userdata1:srcname][userdata2:srcmac][userdata3:action][userdata4:dstintf][userdata5:level][userdata6:vd][userdata7:service][userdata8:srcintf][userdata9:osname]
+
+
+
+end:end

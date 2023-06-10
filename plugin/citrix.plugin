@@ -1,0 +1,250 @@
+plugin_id: 1678
+filename: citrix.plugin
+listen_ip: 192.168.0.33
+optimized: false
+core_id: [7]
+
+regex_id: 0
+description: 0001a - EVENT DEVICE or MONITOR or UNKNOWN UP or Down
+precheck: 
+regexp: (?P<date>\d{1,2}\/\d{1,2}\/\d{4}:\d{1,2}:\d{1,2}:\d{1,2})\s+(?P<sensor>[a-zA-Z0-9\.-]+)\s+(0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])[- /.](19|20)\d\d:([01]?[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])\s+([A-Z]{3}\s)?\S+\s+[^ ]+\s:\s+(?P<rawsid>\w+\s+[^ ]+)\s+\d+\s\d*\s*:\s+(?P<rulename>\w+)\s[^\(]*\((?P<srcip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):(?P<srcport>\d{1,5})\) - State (?P<state>\w+)
+fields: [sensor:"siemplus"][event_type:"event"][date:date:normalize_date_citrix][device:sensor][src_ip:srcip][src_port:srcport::integer][userdata1:rulename][userdata2:state][plugin_sid:rawsid:translate_citrix:integer]
+
+regex_id: 1
+description: 0001b - EVENT DEVICE node Status
+precheck: node
+regexp: (?P<date>\d{1,2}\/\d{1,2}\/\d{4}:\d{1,2}:\d{1,2}:\d{1,2})\s+(?P<sensor>[a-zA-Z0-9\.-]+)\s+(?:0[1-9]|1[012])[- /.](?:0[1-9]|[12][0-9]|3[01])[- /.](?:19|20)\d\d:(?:[01]?[0-9]|2[0-3]):(?:[0-5][0-9]):(?:[0-5][0-9])\s+(?:[A-Z]{3}\s)?\S+\s+[^ ]+\s:(?:\sdefault)?\s+(?P<rawsid>\w+\s+[^ ]+)\s+\d+\s\d*\s*:\s+(?P<rulename>\w+)\s"\S+\snode\s(?P<srcip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"\s-\s(?:State\s)?"?(?P<state>\w+(?:(?:\s\w+)+)?)
+fields: [sensor:"siemplus"][event_type:"event"][date:date:normalize_date_citrix][device:sensor][src_ip:srcip][userdata1:rulename][userdata2:state][plugin_sid:rawsid:translate_citrix:integer]
+
+regex_id: 2
+description: 0002 - SNMP TRAP_SENT
+precheck: 
+regexp: (?P<date>\d{1,2}\/\d{1,2}\/\d{4}:\d{1,2}:\d{1,2}:\d{1,2})\s+(?P<sensor>[a-zA-Z0-9\.-]+)\s+(0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])[- /.](19|20)\d\d:([01]?[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])\s+([A-Z]{3}\s)?\S+\s+[^ ]+\s:\s+(?P<rawsid>\w+\s+[^ ]+)\s+\d+\s\d+\s:\s+(?P<title>[a-zA-Z0-9-_]+)\s+\((?:(?P<token1>[^ ]+) = (?P<token1val>[^,\)]+)|)(?:, (?P<token2>[^ ]+) = (?P<token2val>[^,\)]+)|)(?:, (?P<token3>[^ ]+) = (?P<token3val>[^,\)]+)|)(?:, (?P<token4>[^ ]+) = (?P<token4val>[^,\)]+)|)(?:, (?P<token5>[^ ]+) = (?P<token5val>[^,\)]+)|)(?:, (?P<token6>[^ ]+) = (?P<token6val>[^,\)]+)|)(?:, (?P<token7>[^ ]+) = (?P<token7val>[^,\)]+)|)(?:, (?P<token8>[^ ]+) = (?P<token8val>[^,\)]+)|)\)
+fields: [sensor:"siemplus"][event_type:"event"][date:date:normalize_date_citrix][device:sensor][userdata1:title][userdata2:token1][userdata3:token1val][userdata4:token2][userdata5:token2val][userdata6:token3][userdata7:token3val][userdata8:token4][userdata9:token4val][plugin_sid:rawsid:translate_citrix:integer]
+
+regex_id: 3
+description: 0003 - SSLLOG SSL_HANDSHAKE_SUCCESS
+precheck: SSLLOG SSL_HANDSHAKE_SUCCESS
+regexp: ^(?P<date>\d{1,2}\/\d{1,2}\/\d{4}:\d{1,2}:\d{1,2}:\d{1,2})\s+(?P<sensor>\S+)(?:\s+\S+(?:(?!\s+SSLLOG)\s+\S+)*)\s+(?P<rawsid>SSLLOG SSL_HANDSHAKE_SUCCESS)[^:]+:.*?SPCBId\s+(?P<spcbid>\d+) - (?:ClientIP (?P<srcip>[a-zA-Z0-9\.-]+)\s+- |ClientPort (?P<srcport>[a-zA-Z0-9\.-]+)\s+- |(?:VserverServiceIP|ServerIP) (?P<vserver>[a-zA-Z0-9\.-]+)\s+- |(?:VserverServicePort|ServerPort) (?P<vserverport>[a-zA-Z0-9\.-]+)\s+- |(?:Client|Protocol)Version (?P<clientver>[a-zA-Z0-9\.-]+)\s+- |CipherSuite "(?P<ciphersuite>[^"]+)" - |Session (?P<status>\w+)[\s-]*|SERVER_AUTHENTICATED -SerialNumber "(?P<serial_number>[^"]+)"[\s-]+|SignatureAlgorithm "(?P<signature_alg>[^"]+)"[\s-]+)*
+fields: [sensor:"siemplus"][event_type:"event"][date:date:normalize_date_citrix][plugin_sid:rawsid:translate_citrix:integer][device:sensor][src_ip:srcip][dst_ip:vserver][src_port:srcport::integer][dst_port:vserverport::integer][userdata1:spcbid][userdata2:status][userdata5:clientver][userdata6:ciphersuite][userdata7:serial_number][userdata8:signature_alg]
+
+regex_id: 4
+description: 0004 - TCP CONN_DELINK
+precheck: 
+regexp: (?P<date>\d{1,2}\/\d{1,2}\/\d{4}:\d{1,2}:\d{1,2}:\d{1,2})\s+(?P<sensor>[a-zA-Z0-9\.-]+)\s+(0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])[- /.](19|20)\d\d:([01]?[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])\s+([A-Z]{3}\s)?\S+\s+[^ ]+\s:\s+(?:default\s+)?TCP\sCONN_DELINK\s\d+\s\d\s:\s+Source\s(?:TD_\d+_)?(?P<src_ip>\IPV4_IMPR):(?P<src_port>\d+)\s-\sVserver\s(?:TD_\d+_)?(?P<vserver>\IPV4_IMPR):(?P<vserver_port>\d+)+\s-\sNatIP\s(?:TD_\d+_)?(?P<nat_ip>\IPV4_IMPR):(?P<nat_port>\d+)\s-\sDestination\s(?:TD_\d+_)?(?P<dst_ip>\IPV4_IMPR):(?P<dst_port>\d+)\s-\sDelink\sTime\s(0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])[- /.](19|20)\d\d:\s?([01]?[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])\s+([A-Z]{3}\s)?.*Total_bytes_send\s\d+\s-\sTotal_bytes_recv\s\d+$
+fields: [sensor:"siemplus"][event_type:"event"][date:date:normalize_date_citrix][device:sensor][src_ip:src_ip][dst_ip:dst_ip][src_port:src_port::integer][dst_port:dst_port::integer][protocol:"6"][userdata3:vserver][userdata4:vserver_port][userdata5:nat_ip][userdata6:nat_port][plugin_sid:"203"::integer]
+
+regex_id: 5
+description: 0005 - TCP OTHERCONN_DELINK
+precheck: 
+regexp: (?P<date>\d{1,2}\/\d{1,2}\/\d{4}:\d{1,2}:\d{1,2}:\d{1,2})\s+(?P<sensor>[a-zA-Z0-9\.-]+)\s+(0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])[- /.](19|20)\d\d:([01]?[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])\s+([A-Z]{3}\s)?\S+\s+[^ ]+\s:\s+(?:default\s+)?TCP\sOTHERCONN_DELINK\s\d+\s\d\s:\s+Source\s(?P<src_ip>\IPV4_IMPR):(?P<src_port>\d+)\s-\sVserver\s(?P<vserver>\IPV4_IMPR):(?P<vserver_port>\d+)+\s-\sNatIP\s(?P<nat_ip>\IPV4_IMPR):(?P<nat_port>\d+)\s-\sDestination\s(?P<dst_ip>\IPV4_IMPR):(?P<dst_port>\d+)\s-\sDelink\sTime\s(0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])[- /.](19|20)\d\d:\s?([01]?[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])\s+([A-Z]{3}\s)?Total_bytes_send\s\d+\s-\sTotal_bytes_recv\s\d+$
+fields: [sensor:"siemplus"][event_type:"event"][date:date:normalize_date_citrix][device:sensor][src_ip:src_ip][dst_ip:dst_ip][src_port:src_port::integer][dst_port:dst_port::integer][protocol:"6"][userdata3:vserver][userdata4:vserver_port][userdata5:nat_ip][userdata6:nat_port][plugin_sid:"205"::integer]
+
+regex_id: 6
+description: 0006 - TCP CONN_TERMINATE
+precheck: 
+regexp: (?P<date>\d{1,2}\/\d{1,2}\/\d{4}:\d{1,2}:\d{1,2}:\d{1,2})\s+(?P<sensor>\IPV4_IMPR)\s+((0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])[- /.](19|20)\d\d:([01]?[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]))\s+([A-Z]{3}\s)?\S+\s+[^ ]+\s:\s+(?:default\s+)?(?P<rawsid>\w+\s+[^ ]+)\s+\d+\s\d+\s:\s+Source\s+(?:TD_\d+_)?(?P<src_ip>\IPV4_IMPR):(?P<src_port>[^ ]+)\s- Destination\s+(?:TD_\d+_)?(?P<dst_ip>\IPV4_IMPR):(?P<dst_port>[^ ]+)\s-.*.Total_bytes_send\s+(?P<bytes_out>\d+) - Total_bytes_recv\s+(?P<bytes_in>\d+)
+fields: [sensor:"siemplus"][event_type:"event"][date:date:normalize_date_citrix][device:sensor][src_ip:src_ip][dst_ip:dst_ip][src_port:src_port::integer][dst_port:dst_port::integer][protocol:"6"][userdata1:bytes_out][userdata2:bytes_in][plugin_sid:rawsid:translate_citrix:integer]
+
+regex_id: 7
+description: 0007 - UI Command Executed
+precheck: Command
+regexp: ^(?P<date>\d{1,2}\/\d{1,2}\/\d{4}:\d{1,2}:\d{1,2}:\d{1,2})\s+(?P<sensor>[a-zA-Z0-9\.-]+)\s+(0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])[- /.](19|20)\d\d:([01]?[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])\s+([A-Z]{3}\s)?\S+\s+[^ ]+\s:\s+(?P<rawsid>\w+\s+[^ ]+)\s+\d+\s*\d*\s:\s+User\s+(?P<user>[^ ]+)\s+-\s+[^ ]+\s+(?P<srcip>[^ ]+)\s+-\s+Command "(?P<command>[^"]+)" - Status "(?P<status>[^"]+)
+fields: [sensor:"siemplus"][event_type:"event"][date:date:normalize_date_citrix][device:sensor][src_ip:srcip][username:user][userdata1:command][userdata2:status][plugin_sid:rawsid:translate_citrix:integer]
+
+regex_id: 8
+description: 0008 - APPFW APPFW Start URL
+precheck: 
+regexp: ^(?P<date>\d{1,2}\/\d{1,2}\/\d{4}:\d{1,2}:\d{1,2}:\d{1,2})\s+(?P<sensor>\S*)\s+(?:0[1-9]|1[012])[- /.](?:0[1-9]|[12][0-9]|3[01])[- /.](?:19|20)\d\d:\s?(?:[01]?[0-9]|2[0-3]):(?:[0-5][0-9]):(?:[0-5][0-9])\s+(?:[A-Z]{3}\s)?\S+\s+[^ ]+\s:\s+(?:default\s)?(?P<rawsid>\w+\s+[^ ]+)\s\d+\s\d\s:\s+(?P<src_ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s(?:\S+(?:(?!\shttp)\s\S+)*)\shttps?://(?P<destination>[^/]*)(?P<url_path>\S+)
+fields: [sensor:"siemplus"][event_type:"event"][date:date:normalize_date_citrix][src_ip:srcip][dst_ip:destination][device:sensor][plugin_sid:rawsid:translate_citrix:integer][userdata1:url_path]
+
+regex_id: 9
+description: 0009 - APPFW APPFW_CSRF_TAG
+precheck: 
+regexp: ^(?P<date>\d{1,2}\/\d{1,2}\/\d{4}:\d{1,2}:\d{1,2}:\d{1,2})\s+(?P<sensor>\S*)\s+(?:0[1-9]|1[012])[- /.](?:0[1-9]|[12][0-9]|3[01])[- /.](?:19|20)\d\d:\s?(?:[01]?[0-9]|2[0-3]):(?:[0-5][0-9]):(?:[0-5][0-9])\s+(?:[A-Z]{3}\s)?\S+\s+[^ ]+\s:\s+(?:default\s)?(?P<rawsid>\w+\s+[^ ]+)\s\d+\s\d\s:\s+(?P<src_ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s(?:\S+(?:(?!\shttp)\s\S+)*)\shttps?://(?P<destination>[^/]*)(?P<url_path>\S+)
+fields: [sensor:"siemplus"][event_type:"event"][date:date:normalize_date_citrix][src_ip:src_ip][device:sensor][plugin_sid:rawsid:translate_citrix:integer]
+
+regex_id: 10
+description: 0009-b - SSLLOG SSL_HANDSHAKE_ISSUERNAME
+precheck: SSLLOG SSL_HANDSHAKE_
+regexp: (?P<date>\d{1,2}\/\d{1,2}\/\d{4}:\d{1,2}:\d{1,2}:\d{1,2})\s+(?P<sensor>[a-zA-Z0-9\.-]+)\s+\S+(?:(?!\s+SSLLOG)\s+\S+)*\s+(?P<rawsid>SSLLOG\s+SSL_HANDSHAKE_(?:ISSUERNAME|SUBJECTNAME))[^:]+:\s+[^-]+-\s+(?:IssuerName\s+"\s*(?P<issuer_name>[^"]+)"|SubjectName\s+"\s*(?P<subject_name>[^"]+)")
+fields: [sensor:"siemplus"][event_type:"event"][plugin_sid:rawsid:translate_citrix:integer][date:date:normalize_date_citrix][device:sensor][userdata1:issuer_name][userdata2:subject_name]
+
+regex_id: 11
+description: 0010 - SSL rule v10_5
+precheck: SSL
+regexp: (?P<date>\d{1,2}\/\d{1,2}\/\d{4}:\d{1,2}:\d{1,2}:\d{1,2})\s+(?P<sensor>\S+)\s+.*?(?P<rawsid>\w+\s+[^ ]+)\s+-?\d+\s\d\s:.*?(?:User (?P<username>\S+)\s+.*?)?Nat_ip\s+(?P<nat_ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*?Vserver\s+(?P<vserver_ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):(?P<vserver_port>[^ ]+).*?Source\s+(?P<src_ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):(?P<src_port>[^ ]+)\s- Destination\s+(?P<dst_ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):(?P<dst_port>[^ ]+)\s-.*?Total_bytes_send\s+(?P<bytes_out>\d+) - Total_bytes_recv\s+(?P<bytes_in>\d+)
+fields: [sensor:"siemplus"][event_type:"event"][date:date:normalize_date_citrix][plugin_sid:rawsid:translate_citrix:integer][device:sensor][src_ip:src_ip][dst_ip:dst_ip][src_port:src_port::integer][dst_port:dst_port::integer][username:username][userdata1:bytes_out][userdata2:bytes_in][userdata3:nat_ip][userdata4:vserver_ip][userdata5:vserver_port]
+
+regex_id: 12
+description: 0011a - AATM SSLVPN rule v10_5
+precheck: User
+regexp: (?P<date>\d{1,2}\/\d{1,2}\/\d{4}:\d{1,2}:\d{1,2}:\d{1,2})\s+(?P<sensor>[a-zA-Z0-9\.-]+)\s+.*?(?P<rawsid>\w+\s+[^ ]+)\s+\d+\s\d\s:.*?(?:SessionId:|Sessionid)\s+(?P<session_id>\d+).*?User\s+(?P<user>\S+).*?Client_ip\s+(?P<src_ip>[a-zA-Z0-9\.-]+).*?Nat_ip\s"(?P<nat_ip>[^\"]*)"\s-\s+(?:Vserver_ip|Vserver)\s(?P<vserver>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(?::(?P<vserver_port>\d+))?(?:[\s-]*Start_time\s"(?P<start>[^"]+)"[\s-]*End_time\s"(?P<end>[^"]+)"[\s-]*Duration\s(?P<duration>\S+))?
+fields: [sensor:"siemplus"][event_type:"event"][date:date:normalize_date_citrix][device:sensor][plugin_sid:rawsid:translate_citrix:integer][src_ip:src_ip][username:user][userdata1:session_id][userdata2:nat_ip][userdata3:vserver][userdata4:vserver_port][userdata5:start][userdata6:end][userdata7:duration]
+
+regex_id: 13
+description: 0011b - AATM SSLVPN rule v10_5
+precheck: SSLVPN
+regexp: ^(?P<date>\d{1,2}\/\d{1,2}\/\d{4}:\d{1,2}:\d{1,2}:\d{1,2})\s+(?P<sensor>\S*)\s+(?:0[1-9]|1[012])[- /.](?:0[1-9]|[12][0-9]|3[01])[- /.](?:19|20)\d\d:\s?(?:[01]?[0-9]|2[0-3]):(?:[0-5][0-9]):(?:[0-5][0-9])\s+(?:[A-Z]{3}\s)?\S+\s+[^ ]+\s:\s+(?:default\s)?(?P<rawsid>\w+\s+[^ ]+)\s(?:(?:\S+(?:(?!\sSessionId)\s+\S+)*)\sSessionId:\s(?P<session_id>\d+)\s*)?(?:(?:\S+(?:(?!\sUser)\s+\S+)*)\sUser\s(?P<user>\S+)\s*)?(?:\S+(?:(?!\sClient_ip)\s+\S+)*)\sClient_ip\s(?P<src_ip>\d+\.\d+\.\d+\.\d+)\s*(?:(?:\S+(?:(?!\sNat_ip)\s+\S+)*)\sNat_ip\s(?P<nat_ip>\d+\.\d+\.\d+\.\d+)\s*)?(?:\S+(?:(?!\sVserver)\s+\S+)*)\sVserver\s(?P<vserver>\d+\.\d+\.\d+\.\d+)(?::(?P<vserver_port>\d+))?(?:[\s-]*Start_time\s"(?P<start>[^"]+)"[\s-]*End_time\s"(?P<end>[^"]+)"[\s-]*Duration\s(?P<duration>\S+))?
+fields: [sensor:"siemplus"][event_type:"event"][date:date:normalize_date_citrix][device:sensor][plugin_sid:rawsid:translate_citrix:integer][src_ip:src_ip][username:user][userdata1:session_id][userdata2:nat_ip][userdata3:vserver][userdata4:vserver_port][userdata5:start][userdata6:end][userdata7:duration]
+
+regex_id: 14
+description: 0012 - SNMP rule v10_5
+precheck: SNMP
+regexp: (?P<date>\d{1,2}\/\d{1,2}\/\d{4}:\d{1,2}:\d{1,2}:\d{1,2})\s+(?P<sensor>[a-zA-Z0-9\.-]+)\s+.*?(?P<rawsid>\w+\s+[^ ]+)\s+\d+\s\d\s:.*?(?P<tittle>[a-zA-Z0-9-_]+)\s+\((?:(?P<token1>[^ ]+) = (?P<token1val>[^,\)]+)|)(?:, (?P<token2>[^ ]+) = (?P<token2val>[^,\)]+)|)(?:, (?P<token3>[^ ]+) = (?P<token3val>[^,\)]+)|)\)
+fields: [sensor:"siemplus"][event_type:"event"][date:date:normalize_date_citrix][device:sensor][plugin_sid:rawsid:translate_citrix:integer][userdata1:tittle][userdata2:token1][userdata3:token1val][userdata4:token2][userdata5:token2val][userdata6:token3][userdata7:token3val]
+
+regex_id: 15
+description: 0013 - DEVICE UP OR DOWN gmt
+precheck: DEVICE
+regexp: (?P<date>\d{1,2}\/\d{1,2}\/\d{4}:\d{1,2}:\d{1,2}:\d{1,2})\S+\s(?P<sensor>[a-zA-Z0-9\.-]+).+?GMT.*?(?P<rawsid>\w+\s+[^ ]+)\s+\d+.*?\"(?P<srcip>\S+):(?P<srcport>\d{1,5}).*?State\s+(?P<state>\S+)
+fields: [sensor:"siemplus"][event_type:"event"][date:date:normalize_date_citrix][device:sensor][plugin_sid:rawsid:translate_citrix:integer][src_ip:srcip][src_port:srcport::integer][userdata1:state]
+
+regex_id: 16
+description: 0014 - MONITOR UP DOWN rule v10_5
+precheck: State
+regexp: (?P<date>\d{1,2}\/\d{1,2}\/\d{4}:\d{1,2}:\d{1,2}:\d{1,2})\s+(?P<sensor>[a-zA-Z0-9\.-]+)\s+.*?(?P<rawsid>\w+\s+[^ ]+)\s+\d+\s\d\s:.*?(?P<rule_name>.+?)\_(?P<src_ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):(?P<src_port>\d+).*?State\s+(?P<state>\w+)
+fields: [sensor:"siemplus"][event_type:"event"][date:date:normalize_date_citrix][device:sensor:translate_citrix][src_ip:src_ip][src_port:src_port::integer][plugin_sid:rawsid:translate_citrix:integer][userdata1:rule_name][userdata2:state]
+
+regex_id: 17
+description: 0015 - MONITOR UP OR DOWN gmt
+precheck: State
+regexp: (?P<date>\d{1,2}\/\d{1,2}\/\d{4}:\d{1,2}:\d{1,2}:\d{1,2})\S+\s(?P<sensor>[a-zA-Z0-9\.-]+).+?GMT.*?(?P<rawsid>\w+\s+[^ ]+)\s+\d+.*?\((?P<src_ip>\S+):(?P<src_port>\d+)\).*?State\s+(?P<state>\S+)
+fields: [sensor:"siemplus"][event_type:"event"][date:date:normalize_date_citrix][device:sensor:translate_citrix][src_ip:src_ip][src_port:src_port::integer][plugin_sid:rawsid:translate_citrix:integer][userdata1:state]
+
+regex_id: 18
+description: 0016 - COMMAND EXECUTED v10_5
+precheck: Command
+regexp: (?P<date>\d{1,2}\/\d{1,2}\/\d{4}:\d{1,2}:\d{1,2}:\d{1,2})\s+(?P<sensor>\S+)\s+(?:\S+:\s+\S+\s+)?(?:\d+/\d+/\d+:\d+:\d+:\d+\s+\S+\s*)?(?:\S+\s+\S+\s+:\s+)?\s*(?:\S+\s+)?(?P<rawsid>(?:GUI|UI)\s+\S+)\s+(?:\d+\s\d\s)?:.*?User\s+(?P<user>[^ ]+)\s+-\s+[^ ]+\s+(?P<src_ip>\d+\.\d+\.\d+\.\d+)?\s+-\s+Command\s+"(?P<command>[^"]*)".*?Status\s+"(?P<status>[^"]+)
+fields: [sensor:"siemplus"][event_type:"event"][date:date:normalize_date_citrix][device:sensor][src_ip:src_ip][plugin_sid:rawsid:translate_citrix:integer][username:user][userdata1:command][userdata2:status]
+
+regex_id: 19
+description: 0017 - COMMAND EXECUTED gmt
+precheck: Command
+regexp: (?P<date>\d{1,2}\/\d{1,2}\/\d{4}:\d{1,2}:\d{1,2}:\d{1,2})\S+\s(?P<sensor>[a-zA-Z0-9\.-]+).*?GMT.*?:\s+(?P<rawsid>\w+\s+[^ ]+)\s+\d+.*?User\s+(?P<username>\S+).*?Remote_ip\s+(?P<src_ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*?Command\s+"(?P<command>[^"]*)".*?Status\s+"(?P<status>[^"]+)"
+fields: [sensor:"siemplus"][event_type:"event"][date:date:normalize_date_citrix][device:sensor:translate_citrix][src_ip:src_ip][plugin_sid:rawsid:translate_citrix:integer][username:username][userdata1:command][userdata2:status]
+
+regex_id: 20
+description: 0018 - SSL GENERIc v10_5
+precheck: SSL
+regexp: (?P<date>\d{1,2}\/\d{1,2}\/\d{4}:\d{1,2}:\d{1,2}:\d{1,2})\s+(?P<sensor>\S+)\s+.*?(?P<rawsid>\w+\s+[^ ]+)\s+-?\d+\s\d\s:.*?@(?P<src_ip>\S+).*?(?:User (?P<username>\S+).*?)?Vserver\s+(?P<vserver_ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):(?P<vserver_port>[^ ]+)(?:.*?(?P<method>GET|POST)\s+(?P<resource>\S+))?
+fields: [sensor:"siemplus"][event_type:"event"][date:date:normalize_date_citrix][device:sensor][src_ip:src_ip][dst_ip:vserver_ip][dst_port:vserver__port::integer][plugin_sid:rawsid:translate_citrix:integer][userdata1:method][userdata2:resource]
+
+regex_id: 21
+description: 0019 - TCP gmt
+precheck: TCP
+regexp: (?P<date>\d{1,2}\/\d{1,2}\/\d{4}:\d{1,2}:\d{1,2}:\d{1,2})\S+\s(?P<sensor>[a-zA-Z0-9\.-]+).+?GMT.*?(?P<rawsid>\w+\s+[^ ]+)\s+\d+.*?Source\s+(?P<src_ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):(?P<src_port>\d+).*?Destination\s+(?P<dst_ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):(?P<dst_port>\d+).*?Total_bytes_send\s+(?P<bytes_send>\d+).*?Total_bytes_recv\s+(?P<bytes_recv>\d+)
+fields: [sensor:"siemplus"][event_type:"event"][date:date:normalize_date_citrix][device:sensor:translate_citrix][src_ip:src_ip][src_port:src_port::integer][dst_ip:dst_ip][dst_port:dst_port::integer][plugin_sid:rawsid:translate_citrix:integer][userdata2:bytes_send][userdata3:bytes_recv]
+
+regex_id: 22
+description: 0020 - AAA rule v10_5
+precheck: AAA
+regexp: (?P<date>\d{1,2}\/\d{1,2}\/\d{4}:\d{1,2}:\d{1,2}:\d{1,2})\s+(?P<sensor>[a-zA-Z0-9\.-]+)\s+.*?(?P<rawsid>\w+\s+[^ ]+)\s+\d+\s\d\s:.*?User\s+(?P<user>\S+).*?Client_ip\s+(?P<src_ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*?"(?P<message>[^"]*)"
+fields: [sensor:"siemplus"][event_type:"event"][date:date:normalize_date_citrix][device:sensor][src_ip:src_ip][plugin_sid:rawsid:translate_citrix:integer][username:user][userdata1:meesage]
+
+regex_id: 23
+description: 0021-a - SSLVPN source destination v10_5
+precheck: SSLVPN
+regexp: (?P<date>\d{1,2}\/\d{1,2}\/\d{4}:\d{1,2}:\d{1,2}:\d{1,2})\s+(?P<sensor>\S+)\s+.*?(?P<rawsid>\w+\s+[^ ]+)\s+-?\d+\s\d\s:\s+Source\s(?P<src_ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):(?P<src_port>\d+)\s-\sDestination\s(?P<dst_ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):(?P<dst_port>\d+)\s-\s+\S+\s+(?P<username>\S+):(?P<domainname>\S+)
+fields: [sensor:"siemplus"][event_type:"event"][date:date:normalize_date_citrix][device:sensor][src_ip:src_ip][src_port:src_port::integer][dst_ip:dst_ip][dst_port:dst_port::integer][plugin_sid:rawsid:translate_citrix:integer][username:username][userdata1:domainname]
+
+regex_id: 24
+description: 0021-b - SSLVPN source destination v10_5 without syslog header
+precheck: SSLVPN
+regexp: ^(<\d+>)?\s*(?P<date>\d{1,2}\/\d{1,2}\/\d{4}:\d{1,2}:\d{1,2}:\d{1,2})\s+(?P<device>\S+)[^:]+:.*?(?P<rawsid>SSLVPN \S+)\s+-?\d+\s\d\s:\s+Source\s(?P<src_ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):(?P<src_port>\d+)\s-\sDestination\s(?P<dst_ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):(?P<dst_port>\d+)\s-\s+\S+[\s-]+username:domainname\s+(?P<username>[^:]+):(?P<domainname>\S+)[\s-]+(?:startTime\s+"(?P<start>[^"]+)\s"[\s-]+|endTime\s+"(?P<end>[^"]+)\s"[\s-]+|Duration\s+(?P<duration>\S+)[\s-]+|Total_bytes_send\s+(?P<bytes_sent>\S+)[\s-]+|Total_bytes_recv\s+(?P<bytes_recv>\S+)[\s-]+|connectionId\s+(?P<connection_id>\S+)|applicationName (?P<app>\S+)[\s-]+|\S+\s+\S+[\s-]+)+
+fields: [sensor:"siemplus"][event_type:"event"][date:date:normalize_date_citrix_american][device:device][src_ip:src_ip][src_port:src_port::integer][dst_ip:dst_ip][dst_port:dst_port::integer][plugin_sid:rawsid:translate_citrix:integer][username:username][userdata1:domainname][userdata2:start][userdata3:end][userdata4:duration][userdata5:bytes_sent][userdata6:bytes_recv][userdata7:connection_id][userdata8:app]
+
+regex_id: 25
+description: 0022 - SSLLOG SSL gmt
+precheck: SSLLOG
+regexp: (?P<date>\d{1,2}\/\d{1,2}\/\d{4}:\d{1,2}:\d{1,2}:\d{1,2})\s+(?P<sensor>[a-zA-Z0-9\.-]+)\s+.+?GMT.*?(?P<rawsid>\w+\s+[^ ]+)\s+\d+.*?ClientIP\s+(?P<src_ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*?ClientPort\s+(?P<src_port>\d+).*?VserverServiceIP\s+(?P<dst_ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*?VserverServicePort\s+(?P<dst_port>\d+)\s+- ClientVersion (?P<clientver>[a-zA-Z0-9\.-]+)\s+- CipherSuite "(?P<ciphersuite>[^"]+)" - Session (?P<status>\w+)
+fields: [sensor:"siemplus"][event_type:"event"][date:date:normalize_date_citrix][device:sensor][src_ip:src_ip][src_port:src_port::integer][dst_ip:dst_ip][dst_port:dst_port::integer][plugin_sid:rawsid:translate_citrix:integer][userdata1:clientver][userdata2:ciphersuite][userdata3:status]
+
+regex_id: 26
+description: 0023 - SSLVPN Client security check
+precheck: Client security check
+regexp: (?P<date>\d{1,2}\/\d{1,2}\/\d{4}:\d{1,2}:\d{1,2}:\d{1,2})\s+(?P<sensor>\S+)\s+.*?(?P<rawsid>\w+\s+[^ ]+)\s+-?\d+\s\d\s:\s+CaseID\s(?P<case_id>[^:]+):\s-\sClient\sIP\s(?P<src_ip>\d+\.\d+\.\d+\.\d+)\s-\sVserver\s(?P<vserver_ip>\d+\.\d+\.\d+\.\d+)(?::(?P<vserver_port>\d+))?\s-\sClient\ssecurity\scheck\sCLIENT\.(?:APPLICATION|OS)\('?(?P<application_or_os>[^'\)]+)
+fields: [sensor:"siemplus"][event_type:"event"][date:date:normalize_date_citrix][device:sensor][src_ip:src_ip][dst_ip:vserver_ip][dst_port:vserver_port::integer][plugin_sid:rawsid:translate_citrix:integer][userdata1:case_id][userdata2:application_or_os]
+
+regex_id: 27
+description: 0024 - ROUTING config sync
+precheck: config sync
+regexp: (?P<date>\d{1,2}\/\d{1,2}\/\d{4}:\d{1,2}:\d{1,2}:\d{1,2})\s+(?P<sensor>[a-zA-Z0-9\.-]+)\s+(?:0[1-9]|1[012])[- /.](?:0[1-9]|[12][0-9]|3[01])[- /.](?:19|20)\d\d:(?:[01]?[0-9]|2[0-3]):(?:[0-5][0-9]):(?:[0-5][0-9])\s+(?:[A-Z]{3}\s)?\S+\s+[^ ]+\s:(?:\sdefault)?\s+(?P<rawsid>\w+\s+[^ ]+)\s+\d+\s\d*\s*:\s+(?:\S+(?:(?!\sconfig\ssync)\s\S+)*)\sconfig\ssync\sfrom\s(?P<src_ip>\d+\.\d+\.\d+\.\d+)\s(?P<status>\w+)
+fields: [sensor:"siemplus"][event_type:"event"][date:date:normalize_date_citrix][device:sensor][src_ip:src_ip][plugin_sid:rawsid:translate_citrix:integer][userdata1:status]
+
+regex_id: 28
+description: 0025 - Malformed request
+precheck: Malformed
+regexp: (?P<date>\d{1,2}\/\d{1,2}\/\d{4}:\d{1,2}:\d{1,2}:\d{1,2})\s+(?P<sensor>\S+)\s+.*?(?P<rawsid>\w+\s+[^ ]+)\s+-?\d+\s\d\s:\s*(?P<src_ip>\d+\.\d+\.\d+\.\d+)
+fields: [sensor:"siemplus"][event_type:"event"][date:date:normalize_date_citrix][device:sensor][src_ip:src_ip]
+
+regex_id: 29
+description: 0026 - Citrix ADC UserLogin: Invalid CLI login
+precheck: :UserLogin:
+regexp: (?P<date>\d{1,2}\/\d{1,2}\/\d{4}:\d{1,2}:\d{1,2}:\d{1,2})\s+(?P<sensor>\S+)\s+[^:]+:\s+\S+\s+\d+/\d+/\d+:\d+:\d+:\d+\s+\S+[\s-]+:\s+(?:SNMP\sTRAP_SENT|EVENT LOGINFAILURE)[\s-]+:\s+(?P<dst>[^:]+):UserLogin:(?P<username>\S+)[\s-]+Invalid "CLI" login.*?from\sclient\sIP\s+Address\s(?P<from>\S+)
+fields: [sensor:"siemplus"][event_type:"event"][date:date:normalize_date_citrix][device:sensor][plugin_sid:"800"::integer][src_ip:from][dst_ip:dst][username:username]
+
+regex_id: 30
+description: 0027 - Citrix ADC BackupFailure
+precheck: :BackupFailure:
+regexp: (?P<date>\d{1,2}\/\d{1,2}\/\d{4}:\d{1,2}:\d{1,2}:\d{1,2})\s+(?P<sensor>\S+)\s+[^:]+:\s+\S+\s+\d+/\d+/\d+:\d+:\d+:\d+\s+\S+[\s-]+:\s+(?:SNMP\sTRAP_SENT|EVENT BACKUPFAILED)[\s-]+:\s+(?P<dev>[^:]+):BackupFailure:(?P<src>\S+)[\s-]+Uploading\s+(?P<backup>\S+) on NS\s+\S+\sfailed
+fields: [sensor:"siemplus"][event_type:"event"][date:date:normalize_date_citrix][device:sensor][plugin_sid:"801"::integer][src_ip:src][filename:backup]
+
+regex_id: 31
+description: 0028 - Citrix ADC StatusPoll
+precheck: :StatusPoll:
+regexp: (?P<date>\d{1,2}\/\d{1,2}\/\d{4}:\d{1,2}:\d{1,2}:\d{1,2})\s+(?P<sensor>\S+)\s+[^:]+:\s+\S+\s+\d+/\d+/\d+:\d+:\d+:\d+\s+\S+[\s-]+:\s+(?:SNMP\sTRAP_SENT|EVENT DEVICESTATECHANGED)[\s-]+:\s+(?P<dev>[^:]+):StatusPoll:(?P<src>\S+)[\s-]+Device State changed to (?P<state>Out of Service|DOWN)
+fields: [sensor:"siemplus"][event_type:"event"][date:date:normalize_date_citrix][device:sensor][plugin_sid:state:translate_citrix:integer][src_ip:src]
+
+regex_id: 32
+description: 0029 - Generic Citrix ADC
+precheck:
+regexp: (?P<date>\d{1,2}\/\d{1,2}\/\d{4}:\d{1,2}:\d{1,2}:\d{1,2})\s+(?P<sensor>\S+)\s+[^:]+:\s+\S+\s+\d+/\d+/\d+:\d+:\d+:\d+\s+\S+[\s-]+:\s+(?:SNMP\sTRAP_SENT|EVENT \S+)[\s-]+:\s+(?P<dev>[^:]+):(?P<class>[^:]+):(?P<src>\S+)[\s-]+(?P<event>Device failed to reboot|Device Removed)
+fields: [sensor:"siemplus"][event_type:"event"][date:date:normalize_date_citrix][device:sensor][plugin_sid:event:translate_citrix:integer][src_ip:src][userdata1:class]
+
+
+regex_id: 33
+description: 0030-a - GENERIC v10_5 with key value
+precheck: GENERIC_LOG
+regexp: (?P<date>\d{1,2}\/\d{1,2}\/\d{4}:\d{1,2}:\d{1,2}:\d{1,2})\s+(?P<sensor>\S+).*?default SSLVPN Message\s+-?[^:]+:\s+"(?P<message>.*?(?P<desc>(?:Updating|Creating).*?entry|DHT entry updated) for key '(?P<key>[^']+)'[^"]+)
+fields: [sensor:"siemplus"][event_type:"event"][date:date:normalize_date_citrix][device:sensor][plugin_sid:desc:translate_citrix:integer][userdata1:key]
+
+
+regex_id: 34
+description: 0030-b - GENERIC v10_5 logout / removing session
+precheck:
+regexp: (?P<date>\d{1,2}\/\d{1,2}\/\d{4}:\d{1,2}:\d{1,2}:\d{1,2})\s+(?P<sensor>\S+).*?default SSLVPN Message\s+-?[^:]+:\s+"(?P<message>.*?(?P<desc>(?:vpn\s+log\s+logout).*?for|removing session)\s+(?P<id>\d+)[^"]*)
+fields: [sensor:"siemplus"][event_type:"event"][date:date:normalize_date_citrix][device:sensor][plugin_sid:desc:translate_citrix:integer][userdata1:id]
+
+regex_id: 35
+description: 0031 - CEF
+precheck: CEF:
+regexp: (?P<date>\d{1,2}\/\d{1,2}\/\d{4}:\d{1,2}:\d{1,2}:\d{1,2})\s+(?P<sensor>\S+)\s+.*?(?P<rawsid>\w+\s+[^ ]+)\s+-?\d+\s\d\s:\s*(?P<message>.*)
+fields: [sensor:"siemplus"][date:date:normalize_date_citrix][device:sensor][plugin_sid:rawsid:translate_citrix:integer][event_type:"event"][userdata1:message]
+
+regex_id: 36
+description: 0031 - CEF
+precheck: CEF:
+regexp: (?P<date>\d{1,2}\/\d{1,2}\/\d{4}:\d{1,2}:\d{1,2}:\d{1,2})\s+(?P<sensor>\S+)\s+CEF:\d+\|(?P<vendor>[^\|]+)\|(?P<device_type>[^\|]+)\|(?P<version>[^\|]+)\|(?P<rule_id>[^\|]+)\|(?P<event_name>[^\|]+)\|(?P<severity>[^\|]+)\|(?:src=(?P<src>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s*|geolocation=(?P<geolocation>\S+)\s*|spt=(?P<spt>\d+)\s*|method=(?P<method>\S+)\s+request=(?P<request>\S+)\s*|msg=(?P<msg>(?:Signature violation rule ID (?P<signature>\d+))?\S+(?:(?!\s+\w+=)\s+\S+)*)\s*|cn1=(?P<cn1>\S+)\s*|cn2=(?P<cn2>\S+)\s+cs1=(?P<cs1>\S+)\s*|cs2=(?P<cs2>\S+)\s*|cs4=(?P<cs4>\S+)\s*|cs5=(?P<cs5>\S+)\s*|act=(?P<act>not blocked|\S+)\s*|cs6=(?P<cs6>\S+)\s*)*
+fields: [sensor:"siemplus"][date:date:normalize_date_citrix][device:sensor][plugin_sid:event_name:translate_citrix:integer][src_ip:src][userdata1:geolocation][userdata2:spt][userdata3:method][userdata4:request][userdata5:signature][userdata6:act][userdata7:rule_id][userdata8:severity][userdata9:msg]
+
+regex_id: 37
+description: 0097 - GENERIC KNOWN EVENT
+precheck: GENERIC_LOG
+regexp: (?P<date>\d{1,2}\/\d{1,2}\/\d{4}:\d{1,2}:\d{1,2}:\d{1,2})\s+(?P<sensor>[a-zA-Z0-9\.-]+)\s+(0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])[- /.](19|20)\d\d:([01]?[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])\s+([A-Z]{3}\s)?\S+\s+[^ ]+\s:\s+(?P<rawsid>\w+\s+[^ ]+)\s+\d+\s\d*\s*:\s+(?P<rulename>.*)
+fields: [sensor:"siemplus"][event_type:"event"][date:date:normalize_date_citrix][device:sensor][plugin_sid:rawsid:translate_citrix:integer][userdata1:rulename]
+
+regex_id: 38
+description: 0098 - General Coverage - Taxonomized
+precheck: GENERIC_LOG
+regexp: (?P<date>\d{1,2}\/\d{1,2}\/\d{4}:\d{1,2}:\d{1,2}:\d{1,2})\s+(?P<sensor>[a-zA-Z0-9\.-]+)\s+(0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])[- /.](19|20)\d\d:([01]?[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])\s+([A-Z]{3}\s)?\S+\s+[^ ]+\s:\s+(?P<rawsid>\w+\s+[^ ]+)
+fields: [sensor:"siemplus"][event_type:"event"][date:date:normalize_date_citrix][device:sensor][plugin_sid:rawsid:translate_citrix:integer]
+
+regex_id: 39
+description: 0099 - GENERIC-RULE
+precheck: GENERIC_LOG
+regexp: (?P<date>\d{1,2}\/\d{1,2}\/\d{4}:\d{1,2}:\d{1,2}:\d{1,2})\s\s(?P<sensor>\S*)\s\S*\s:\s(?P<data>.*$)
+fields: [sensor:"siemplus"][event_type:"event"][date:date:normalize_date_citrix][device:sensor][plugin_sid:"999"::integer]
+
+
+end:end

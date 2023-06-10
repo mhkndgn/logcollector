@@ -1,0 +1,20 @@
+-----------------------------------------------------------------------------------------
+   				PCRE 8.44
+-----------------------------------------------------------------------------------------
+
+wget ftp://ftp.pcre.org/pub/pcre/pcre-8.44.tar.gz
+tar -zxvf pcre-8.44.tar.gz
+cd pcre-8.44
+./configure --enable-unicode-properties --enable-jit --disable-shared CFLAGS='-g -O3'
+make 
+make install
+
+-----------------------------------------------------------------------------------------
+   			Logcollector Build instructions
+-----------------------------------------------------------------------------------------
+
+1. ./boot.sh to create build system files and configure
+2. make 
+3. make install 
+4. run with ./src/logcollector -f <config file> -c <cores>
+
